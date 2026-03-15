@@ -12,16 +12,20 @@ export interface Config {
 }
 
 export function loadConfig(): Config {
-  const configPath = path.resolve(__dirname, "../crunchy.json");
-  if (fs.existsSync(configPath)) {
-    try {
-      return JSON.parse(fs.readFileSync(configPath, "utf-8"));
-    } catch (err: any) {
-      console.warn(
-        `Failed to parse crunchy.json: ${err.message}. Using defaults.`,
-      );
+  console.log("CRUNCH_CFG", process.env.CRUNCH_CFG);
+  if (process.env.CRUNCH_CFG) {
+    const customPath = path.resolve(process.env.CRUNCH_CFG);
+    if (fs.existsSync(customPath)) {
+      try {
+        return JSON.parse(fs.readFileSync(customPath, "utf-8"));
+      } catch (err: any) {
+        console.warn(
+          `Failed to parse crunchy.json: ${err.message}. Using defaults.`,
+        );
+      }
     }
   }
+
   return {};
 }
 

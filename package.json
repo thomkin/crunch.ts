@@ -25,7 +25,7 @@
     "build:edge": "tsx scripts/build.mts",
     "build:client": "tsx scripts/buildClient.mts",
     "build": "pnpm run build:registry && ts-patch install -s && pnpm run build:ts && pnpm run build:edge && pnpm run build:client",
-    "test": "vitest run"
+    "test": "cross-env CRUNCH_CFG=./crunchy_test.json pnpm build && vitest run"
   },
   "keywords": [],
   "author": "",
@@ -40,6 +40,7 @@
   "devDependencies": {
     "@bunny.net/edgescript-sdk": "^0.12.1",
     "@types/node": "^25.5.0",
+    "cross-env": "^10.1.0",
     "esbuild": "^0.27.4",
     "ts-node": "^10.9.2",
     "ts-patch": "^3.3.0",

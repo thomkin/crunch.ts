@@ -14,7 +14,7 @@ type validation, JWT authentication, and a fully standalone, type-safe generated
 ```bash
 mkdir my-api && cd my-api
 pnpm init
-pnpm add crunch.ts
+pnpm add github:thomkin/crunch.ts.git
 ```
 
 ### 2. Configure CRUNCH.ts
@@ -58,7 +58,7 @@ Add the build scripts to your `package.json` to trigger the CRUNCH.ts build pipe
 
 ```json
 "scripts": {
-  "build": "pnpm build:registry && pnpm build:client",
+  "build": "CRUNCH_CFG=crunchy.json pnpm build:registry && pnpm build:client",
   "build:registry": "tsx node_modules/crunch.ts/scripts/buildRegistry.mts",
   "build:client": "tsx node_modules/crunch.ts/scripts/buildClient.mts"
 }
