@@ -150,9 +150,9 @@ function findService(path: string, method: HttpMethod) {
   const normalizedPath =
     path.endsWith("/") && path.length > 1 ? path.slice(0, -1) : path;
   const pathParts = normalizedPath.split("/").filter(Boolean);
+  const registryEntries = Object.entries(ServiceRegistry);
 
-  for (const key in ServiceRegistry) {
-    const service = ServiceRegistry[key];
+  for (const [key, service] of registryEntries) {
     const def = service.definition;
 
     if (!def.path || !def.httpMethod || def.httpMethod !== method) continue;
