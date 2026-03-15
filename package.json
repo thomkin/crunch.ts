@@ -1,5 +1,5 @@
 {
-  "name": "global-message-service",
+  "name": "crunch.ts",
   "version": "1.0.0",
   "description": "",
   "main": "./build/tsc/src/handler.js",
@@ -29,7 +29,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "commonjs",
   "ts-node": {
     "esm": true,
