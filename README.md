@@ -59,8 +59,8 @@ Add the build scripts to your `package.json` to trigger the CRUNCH.ts build pipe
 ```json
 "scripts": {
   "build": "pnpm build:registry && pnpm build:client",
-  "build:registry": "tsx node_modules/global-message-service/scripts/buildRegistry.mts",
-  "build:client": "tsx node_modules/global-message-service/scripts/buildClient.mts"
+  "build:registry": "tsx node_modules/crunch.ts/scripts/buildRegistry.mts",
+  "build:client": "tsx node_modules/crunch.ts/scripts/buildClient.mts"
 }
 ```
 
