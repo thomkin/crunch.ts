@@ -15,7 +15,26 @@ export async function handleRequest(request: Request): Promise<Response> {
     try {
       const body = await request.json();
       const responsePayload = await handleRpcRequest(body, request.headers);
-      const status = typeof responsePayload.error === "number" ? 400 : 200;
+      // Determine status code: 200 for success, 400 for client errors, 500 for internal errors
+      let status = 200;
+      if (responsePayload.error) {
+        switch (responsePayload.error) {
+          case RpcErrorCode.InvalidRequest:
+          case RpcErrorCode.InvalidMethod:
+          case RpcErrorCode.MethodNotFound:
+          case RpcErrorCode.ValidationError:
+            status = 400;
+            break;
+          case RpcErrorCode.Unauthorized:
+          case RpcErrorCode.Forbidden:
+            status = 401; // Or 403 depending on the specific error
+            break;
+          case RpcErrorCode.InternalError:
+          default:
+            status = 500;
+            break;
+        }
+      }
 
       return new Response(JSON.stringify(responsePayload), {
         status,
@@ -25,6 +44,8 @@ export async function handleRequest(request: Request): Promise<Response> {
         },
       });
     } catch (err: any) {
+      // This catch block handles errors during request.json() parsing
+      console.error("Failed to parse JSON body:", err);
       return new Response(
         JSON.stringify({
           error: RpcErrorCode.InvalidRequest,

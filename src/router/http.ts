@@ -52,6 +52,7 @@ export async function handleHttpRequest(request: Request): Promise<Response> {
 
     const token = authHeader.substring(7);
     if (!JWT_SECRET) {
+      console.error("JWT_SECRET is not set.");
       return new Response(
         JSON.stringify({
           error: RpcErrorCode.InternalError,
@@ -100,7 +101,10 @@ export async function handleHttpRequest(request: Request): Promise<Response> {
       const body = await request.json();
       input = { ...input, ...body };
     } catch (e) {
-      // Body is optional or might be empty
+      // Body is optional or might be empty, log error if it's not expected
+      if (request.headers.get("Content-Length") !== "0") {
+        console.warn(`Failed to parse JSON body for ${method} ${path}:`, e);
+      }
     }
   }
 
@@ -130,7 +134,7 @@ export async function handleHttpRequest(request: Request): Promise<Response> {
       },
     });
   } catch (err: any) {
-    console.error("HTTP Service Error:", err);
+    console.error(`HTTP Service Error for ${method} ${path}:`, err);
     return new Response(
       JSON.stringify({
         error: RpcErrorCode.InternalError,
@@ -157,26 +161,46 @@ function findService(path: string, method: HttpMethod) {
     const params: Record<string, string> = {};
     let isMatch = true;
 
-    if (patternParts.length !== pathParts.length && !def.path.endsWith("*")) {
-      continue;
-    }
-
-    for (let i = 0; i < patternParts.length; i++) {
-      const patternPart = patternParts[i];
-      const pathPart = pathParts[i];
-
-      if (patternPart === "*") {
-        // Wildcard match remaining parts
-        isMatch = true;
-        break;
+    // Handle wildcard path matching
+    if (def.path.endsWith("*")) {
+      const wildcardPath = def.path.slice(0, -1); // Remove trailing '*'
+      const wildcardPathParts = wildcardPath.split("/").filter(Boolean);
+      if (pathParts.length < wildcardPathParts.length) {
+        continue; // Not enough parts to match the base path
       }
+      // Check the fixed parts of the path
+      for (let i = 0; i < wildcardPathParts.length; i++) {
+        const patternPart = wildcardPathParts[i];
+        const pathPart = pathParts[i];
+        if (patternPart.startsWith(":")) {
+          const paramName = patternPart.slice(1);
+          params[paramName] = pathPart;
+        } else if (patternPart !== pathPart) {
+          isMatch = false;
+          break;
+        }
+      }
+      if (isMatch) {
+        // Capture the rest of the path as a single string for the wildcard parameter
+        const wildcardParamName = "wildcard"; // Default name, could be configurable
+        params[wildcardParamName] = pathParts.slice(wildcardPathParts.length).join("/");
+      }
+    } else {
+      // Standard path matching
+      if (patternParts.length !== pathParts.length) {
+        continue;
+      }
+      for (let i = 0; i < patternParts.length; i++) {
+        const patternPart = patternParts[i];
+        const pathPart = pathParts[i];
 
-      if (patternPart.startsWith(":")) {
-        const paramName = patternPart.slice(1);
-        params[paramName] = pathPart;
-      } else if (patternPart !== pathPart) {
-        isMatch = false;
-        break;
+        if (patternPart.startsWith(":")) {
+          const paramName = patternPart.slice(1);
+          params[paramName] = pathPart;
+        } else if (patternPart !== pathPart) {
+          isMatch = false;
+          break;
+        }
       }
     }
 
