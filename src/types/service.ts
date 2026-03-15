@@ -40,7 +40,7 @@ export type HttpMethod =
 export interface ServiceDefinition<TInput, TOutput> {
   method: string; //needed for rpc endpoints, for CRUD it is used to map them into the client
   isPublic?: boolean;
-  requiredPermission?: string;
+  requiredPermission?: string[];
   handler: (input: TInput, ctx: RpcContext) => Promise<TOutput>;
 
   // HTTP specific fields

@@ -1,0 +1,4 @@
+{
+  "serviceDirectories": ["test/services"],
+  "clientOutDir": "dist/client"
+}

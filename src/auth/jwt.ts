@@ -42,6 +42,7 @@ export async function verifyToken(
   token: string,
   secret: string,
 ): Promise<TokenVerificationResult> {
+  console.log("Token", token);
   if (!token) {
     return { valid: false, error: "Token is missing" };
   }
@@ -52,6 +53,9 @@ export async function verifyToken(
   }
 
   const [headerB64, payloadB64, signatureB64] = parts;
+  console.log("headerB64", headerB64);
+  console.log("payloadB64", payloadB64);
+  console.log("signatureB64", signatureB64);
 
   // 1. Decode Payload
   let payload: JwtPayload;
@@ -60,6 +64,8 @@ export async function verifyToken(
   } catch (e) {
     return { valid: false, error: "Invalid payload format" };
   }
+
+  console.log("Payload,", payload, base64UrlDecode(payloadB64));
 
   // 2. Check Expiration
   if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
@@ -99,8 +105,13 @@ export async function verifyToken(
 
 export function hasPermission(
   payload: JwtPayload,
-  requiredPermission: string,
+  requiredPermissions: string | string[],
 ): boolean {
   if (!payload.permissions) return false;
-  return payload.permissions[requiredPermission] === true;
+  const permissions = Array.isArray(requiredPermissions)
+    ? requiredPermissions
+    : [requiredPermissions];
+  return permissions.some(
+    (permission) => payload?.permissions?.[permission] === true,
+  );
 }
