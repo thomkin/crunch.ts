@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { ServiceRegistry } from "@generated/registry";
+import { ServiceRegistry } from "../../build/generated/registry";
 import {
   RpcContext,
   RpcResponse,
