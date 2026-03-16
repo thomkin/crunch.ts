@@ -8,16 +8,15 @@ import {
   readServiceMeta,
   generateTypesFile,
   ServiceMeta,
+  PACKAGE_ROOT,
+  PROJECT_ROOT,
 } from "./utils.mjs";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const TYPES_SRC = path.join(__dirname, "../src/types/service.ts");
-const CLIENT_DIR = path.join(__dirname, "../build/generated");
+const TYPES_SRC = path.join(PACKAGE_ROOT, "src/types/service.ts");
+const CLIENT_DIR = path.join(PACKAGE_ROOT, "build/generated");
 const CLIENT_FILE = path.join(CLIENT_DIR, "client.ts");
 const TYPES_FILE = path.join(CLIENT_DIR, "types.ts");
-const SRC_ROOT = path.join(__dirname, "..");
+const SRC_ROOT = PACKAGE_ROOT;
 
 interface EnrichedMeta extends ServiceMeta {
   reqName: string;
@@ -162,7 +161,7 @@ function generateClient() {
   for (const relDir of serviceDirs) {
     const absDir = path.isAbsolute(relDir)
       ? relDir
-      : path.resolve(__dirname, "..", relDir);
+      : path.resolve(PROJECT_ROOT, relDir);
     if (!fs.existsSync(absDir)) {
       console.warn(`Warning: Service directory does not exist: ${absDir}`);
       continue;
@@ -245,17 +244,15 @@ function generateClient() {
   if (syncDir) {
     const absSyncDir = path.isAbsolute(syncDir)
       ? syncDir
-      : path.resolve(__dirname, "..", syncDir);
+      : path.resolve(PROJECT_ROOT, syncDir);
     try {
       if (!fs.existsSync(absSyncDir)) {
-        console.warn(
-          `Warning: Client output directory does not exist: ${absSyncDir}`,
-        );
-      } else {
-        fs.writeFileSync(path.join(absSyncDir, "client.ts"), clientContent);
-        fs.writeFileSync(path.join(absSyncDir, "types.ts"), typesContent);
-        console.log(`🚀 Client synced to external directory: ${absSyncDir}`);
+        fs.mkdirSync(absSyncDir, { recursive: true });
+        console.log(`Created client output directory: ${absSyncDir}`);
       }
+      fs.writeFileSync(path.join(absSyncDir, "client.ts"), clientContent);
+      fs.writeFileSync(path.join(absSyncDir, "types.ts"), typesContent);
+      console.log(`🚀 Client synced to external directory: ${absSyncDir}`);
     } catch (err: any) {
       console.error(`Failed to sync client to ${absSyncDir}:`, err.message);
     }

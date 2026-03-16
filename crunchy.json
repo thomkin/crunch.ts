@@ -1,0 +1,5 @@
+{
+  "serviceDirectories": ["test/services", "../anynews/src/services"],
+  "clientOutDir": "test/client",
+  "tsOutDir": "test/crunch.ts"
+}

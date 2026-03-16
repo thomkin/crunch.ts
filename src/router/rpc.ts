@@ -1,5 +1,5 @@
-// @ts-nocheck
-import { ServiceRegistry } from "@generated/registry";
+//@ts-nocheck  its ignore because this file is created dynamcially and does not exist
+import { ServiceRegistry } from "../../registry.ts";
 import {
   RpcRequest,
   RpcResponse,
@@ -7,9 +7,10 @@ import {
   RpcErrorCode,
 } from "../types/service";
 import { verifyToken, hasPermission } from "../auth/jwt";
+import { getEnv } from "../utils/env";
 
 // Secret key for JWT verification. Replace with your actual edge environment variable strategy
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = getEnv("JWT_SECRET");
 
 export async function handleRpcRequest(
   requestBody: unknown,
@@ -99,8 +100,10 @@ export async function handleRpcRequest(
     // 4. Validate Input using generated Typia schema
     let validatedParams: unknown;
     try {
+      console.log("Going to validate the data ", req.params);
       validatedParams = validate(req.params);
     } catch (err: any) {
+      console.log("Thmas --- eroor ", err);
       return {
         error: RpcErrorCode.ValidationError,
         message: "Invalid request parameters",

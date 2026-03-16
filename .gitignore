@@ -14,3 +14,7 @@ dist
 Thumbs.db
 
 
+.aider*
+
+test/crunch.ts 
+test/client

@@ -12,14 +12,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
-    "paths": {
-      "@generated/*": ["build/generated/*"]
-    },
     "plugins": [
       {
         "transform": "typia/lib/transform"
       }
     ]
   },
-  "include": ["src/**/*", "scripts/**/*", "build/generated/**/*"]
+  "include": ["test/**/*", "scripts/**/*"]
 }

@@ -7,8 +7,9 @@ import {
   HttpMethod,
 } from "../types/service";
 import { verifyToken, hasPermission } from "../auth/jwt";
+import { getEnv } from "../utils/env";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = getEnv("JWT_SECRET");
 
 export async function handleHttpRequest(request: Request): Promise<Response> {
   const url = new URL(request.url);

@@ -56,11 +56,13 @@ export const service: ServiceDefinition<Request, Response> = {
 
 Add the build scripts to your `package.json` to trigger the CRUNCH.ts build pipeline:
 
+```bash
+  pnpm add -D tsx typescript cross-env ts-patch vitest
+```
+
 ```json
 "scripts": {
-  "build": "CRUNCH_CFG=crunchy.json pnpm build:registry && pnpm build:client",
-  "build:registry": "tsx node_modules/crunch.ts/scripts/buildRegistry.mts",
-  "build:client": "tsx node_modules/crunch.ts/scripts/buildClient.mts"
+  "build": "cross-env CRUNCH_CFG=./crunchy.json pnpm run node_modules/crunch.ts/build",
 }
 ```
 
