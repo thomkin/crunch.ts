@@ -35,6 +35,7 @@ describe("RPC End-to-End Tests", () => {
 
   it("should access public route (health.isAlive) without token", async () => {
     const res = await client.rpc.health.isAlive({ ping: "hello" });
+    console.log("resp001", res);
     expect(res.error).toBeUndefined();
     expect(res.result?.pong).toBe("hello");
     expect(res.result?.timestamp).toBeDefined();
@@ -88,8 +89,14 @@ describe("RPC End-to-End Tests", () => {
 
   it("should fail data validation for isAlive", async () => {
     // We bypass the type system to test runtime validation
-    const res = await (client.rpc.health.isAlive as any)({ ping: 123 });
+    const res = await client.rpc.health.isAlive({ ping: 123 as any });
+    expect(res.error).toBe(RpcErrorCode.ValidationError);
+    expect(res.message).toBe("Invalid request parameters");
+  });
 
+  it("do not have the parameters defined at all", async () => {
+    // We bypass the type system to test runtime validation
+    const res = await client.rpc.health.isAlive({} as any);
     expect(res.error).toBe(RpcErrorCode.ValidationError);
     expect(res.message).toBe("Invalid request parameters");
   });

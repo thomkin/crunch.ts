@@ -12,6 +12,12 @@ export interface Response {
 export const service: ServiceDefinition<Request, Response> = {
   method: "health.isAliveProtected",
   isPublic: false, // No JWT required
+  validation: (input: Request) => {
+    if (typeof input.ping !== "string") {
+      return null;
+    }
+    return input;
+  },
   handler: async (input: Request, ctx: RpcContext): Promise<Response> => {
     return {
       pong: input.ping || "pong",

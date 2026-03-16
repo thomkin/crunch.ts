@@ -51,7 +51,7 @@ export async function handleRpcRequest(
       };
     }
 
-    const { definition, validate } = serviceEntry;
+    const { definition } = serviceEntry;
 
     // 3. Authenticate and Authorize
     const ctx: RpcContext = {
@@ -98,16 +98,11 @@ export async function handleRpcRequest(
     }
 
     // 4. Validate Input using generated Typia schema
-    let validatedParams: unknown;
-    try {
-      console.log("Going to validate the data ", req.params);
-      validatedParams = validate(req.params);
-    } catch (err: any) {
-      console.log("Thmas --- eroor ", err);
+    const validatedParams = definition.validation(req.params);
+    if (validatedParams === null) {
       return {
         error: RpcErrorCode.ValidationError,
         message: "Invalid request parameters",
-        result: err.paths || err.message, // Provide typia validation errors
       };
     }
 

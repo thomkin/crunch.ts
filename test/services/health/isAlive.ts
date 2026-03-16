@@ -11,9 +11,14 @@ export interface Response {
 
 export const service: ServiceDefinition<Request, Response> = {
   method: "health.isAlive",
+  validation: (input: Request) => {
+    if (typeof input.ping !== "string") {
+      return null;
+    }
+    return input;
+  },
   isPublic: true, // No JWT required
   handler: async (input: Request, ctx: RpcContext): Promise<Response> => {
-    console.log("Is alive is called thomas ----");
     return {
       pong: input.ping || "pong",
       timestamp: new Date().toISOString(),

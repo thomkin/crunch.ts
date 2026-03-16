@@ -42,6 +42,7 @@ export interface ServiceDefinition<TInput, TOutput> {
   isPublic?: boolean;
   requiredPermission?: string[];
   handler: (input: TInput, ctx: RpcContext) => Promise<TOutput>;
+  validation: (input: TInput) => TInput | null;
 
   // HTTP specific fields
   httpMethod?: HttpMethod;
@@ -51,5 +52,5 @@ export interface ServiceDefinition<TInput, TOutput> {
 // Internal type for the generated registry
 export interface RegisteredService {
   definition: ServiceDefinition<unknown, unknown>;
-  validate: (input: unknown) => unknown; // Typia validation wrapper
+  // validate: (input: unknown) => unknown; // Typia validation wrapper
 }

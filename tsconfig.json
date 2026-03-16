@@ -11,12 +11,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "plugins": [
-      {
-        "transform": "typia/lib/transform"
-      }
-    ]
+    "baseUrl": "."
+    // "plugins": [
+    //   {
+    //     "transform": "typia/lib/transform"
+    //   }
+    // ]
   },
   "include": ["test/**/*", "scripts/**/*"]
 }

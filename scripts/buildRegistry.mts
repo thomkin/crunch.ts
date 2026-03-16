@@ -187,9 +187,9 @@ function generateRegistry() {
     for (const meta of metas) {
       regCode += `  [service_${meta.index}.method]: {
     definition: service_${meta.index} as any,
-    validate: (input: unknown) => typia.assert<Req_${meta.index}>(input)
-  },\n`;
+    },\n`;
     }
+    // validate: (input: unknown) => typia.assert<Req_${meta.index}>(input)
     regCode += `};\n`;
     fs.writeFileSync(path.join(tsOutDir, "registry.ts"), regCode);
 
@@ -215,16 +215,16 @@ function generateRegistry() {
       relativePath = relativePath.replace(/\.ts$/, "");
       code += `import { service as service_${meta.index} } from '${relativePath}';\n`;
     }
-
     code += `\nexport const ServiceRegistry: Record<string, RegisteredService> = {\n`;
     for (const meta of metas) {
       code += `  [service_${meta.index}.method]: {
-    definition: service_${meta.index} as any,
-    validate: (input: unknown) => typia.assert<Req_${meta.index}>(input)
-  },\n`;
+        definition: service_${meta.index} as any,
+        
+        },\n`;
     }
     code += `};\n`;
 
+    // validate: (input: unknown) => typia.assert<Req_${meta.index}>(input)
     // Ensure generated directory exists
     if (!fs.existsSync(GEN_DIR)) {
       fs.mkdirSync(GEN_DIR, { recursive: true });
