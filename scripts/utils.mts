@@ -328,3 +328,63 @@ export function generateTypesFile(
 
   return lines.join("\n");
 }
+
+/**
+ * Uses the TypeScript Compiler API to update import/export paths.
+ * @param sourceCode The content of the file
+ 
+ */
+export function transformServiceImports(filePath: string, dstPath: string) {
+  // 1. Read the ACTUAL TEXT of the file
+  if (!fs.existsSync(filePath)) {
+    console.error(`Error: File not found at ${filePath}`);
+    return;
+  }
+
+  const sourceCode = fs.readFileSync(filePath, "utf8");
+
+  // 2. Create the AST from the text
+  const sourceFile = ts.createSourceFile(
+    filePath,
+    sourceCode,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (context) => {
+    return (rootNode) => {
+      const visit = (node: ts.Node): ts.Node => {
+        if (ts.isImportDeclaration(node)) {
+          const ms = node.moduleSpecifier;
+
+          if (
+            ms &&
+            ms.getText().replaceAll('"', "").endsWith("/types/service")
+          ) {
+            const newMs = ts.factory.createStringLiteral(
+              "../src/types/service",
+            );
+
+            return ts.factory.updateImportDeclaration(
+              node,
+              node.modifiers,
+              node.importClause,
+              newMs,
+              node.assertClause,
+            );
+          }
+        }
+        return ts.visitEachChild(node, visit, context);
+      };
+      return ts.visitNode(rootNode, visit) as ts.SourceFile;
+    };
+  };
+
+  // 3. Run transformation and get the new string
+  const result = ts.transform(sourceFile, [transformer]);
+  const printer = ts.createPrinter();
+  const updatedContent = printer.printFile(result.transformed[0]);
+
+  // 4. (Optional) Write the changes back to the file
+  fs.writeFileSync(dstPath, updatedContent);
+}

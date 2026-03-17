@@ -35,7 +35,6 @@ describe("RPC End-to-End Tests", () => {
 
   it("should access public route (health.isAlive) without token", async () => {
     const res = await client.rpc.health.isAlive({ ping: "hello" });
-    console.log("resp001", res);
     expect(res.error).toBeUndefined();
     expect(res.result?.pong).toBe("hello");
     expect(res.result?.timestamp).toBeDefined();

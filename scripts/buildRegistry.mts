@@ -9,6 +9,7 @@ import {
   generateTypesFile,
   PACKAGE_ROOT,
   PROJECT_ROOT,
+  transformServiceImports,
 } from "./utils.mjs";
 import * as ts from "typescript";
 
@@ -125,10 +126,6 @@ function generateRegistry() {
               ? newImport
               : "./" + newImport;
 
-            console.log(
-              "Thomas------------- adjusted imports --",
-              adjustedImport,
-            );
             content = content.replace(
               /import\s+{\s*ServiceRegistry\s*}\s*from\s*["']\.\.\/\.\.\/build\/generated\/registry["']/g,
               `import { ServiceRegistry } from "${adjustedImport}"`,
@@ -163,10 +160,19 @@ function generateRegistry() {
     if (!fs.existsSync(destServices)) fs.mkdirSync(destServices);
 
     const serviceMap = new Map<number, string>(); // index -> relative path in destServices
+
+    //clear services directory
+    fs.rmSync(destServices, { recursive: true, force: true });
+    fs.mkdirSync(destServices);
+
     for (const meta of metas) {
+      console.log("Service files -->", meta.filePath);
+
       const fileName = `service_${meta.index}.ts`;
       const destPath = path.join(destServices, fileName);
-      fs.copyFileSync(meta.filePath, destPath);
+      // fs.copyFileSync(meta.filePath, destPath);
+      //just copying the files is not enough we need to cahnge the import path to point to the new location
+      transformServiceImports(meta.filePath, destPath);
       serviceMap.set(meta.index, `./services/service_${meta.index}`);
     }
 
@@ -174,8 +180,8 @@ function generateRegistry() {
     fs.writeFileSync(path.join(tsOutDir, "types.ts"), typesContent);
 
     // 4. Generate registry.ts
-    let regCode = `import typia from 'typia';\n`;
-    regCode += `import { RegisteredService } from './src/types/service.ts';\n`;
+    // let regCode = `import typia from 'typia';\n`;
+    let regCode = `import { RegisteredService } from './src/types/service.ts';\n`;
     regCode += `import { ${metas.map((m) => `Req_${m.index}`).join(", ")} } from './types.ts';\n\n`;
 
     for (const meta of metas) {
@@ -201,8 +207,8 @@ function generateRegistry() {
   } else {
     // Legacy behavior (internal build)
     // 2. Generate registry.ts
-    let code = `import typia from 'typia';\n`;
-    code += `import { RegisteredService } from '../../src/types/service';\n`;
+    // let code = `import typia from 'typia';\n`;
+    let code = `import { RegisteredService } from '../../src/types/service';\n`;
     code += `import { ${metas.map((m) => `Req_${m.index}`).join(", ")} } from './types';\n\n`;
 
     // We still need to import the service handlers from their original files

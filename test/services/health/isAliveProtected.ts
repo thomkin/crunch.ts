@@ -1,4 +1,7 @@
-import { ServiceDefinition, RpcContext } from "../../../src/types/service";
+import {
+  ServiceDefinition,
+  RpcContext,
+} from "../../crunch.ts/src/types/service";
 
 export interface Request {
   ping?: string;
