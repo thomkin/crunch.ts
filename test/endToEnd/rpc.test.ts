@@ -2,9 +2,8 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { net } from "@bunny.net/edgescript-sdk";
 import { handleRequest } from "../crunch.ts";
 import { init, ServiceClient } from "../client/client";
-
 import { RpcErrorCode } from "../crunch.ts/types.js";
-import { signToken } from "../crunch.ts/src/auth/utils";
+import { signToken } from "../helpers/jwt.js";
 
 const PORT = 3001;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
@@ -19,7 +18,7 @@ describe("RPC End-to-End Tests", () => {
     server = net.http.serve(
       { hostname: "127.0.0.1", port: PORT },
       async (req: Request) => {
-        return handleRequest(req);
+        return handleRequest(req, { enableHttp: true });
       },
     );
 

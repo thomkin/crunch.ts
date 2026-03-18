@@ -23,7 +23,10 @@
     "./scripts/buildClient": "./build/tsc/scripts/buildClient.js"
   },
   "scripts": {
-    "test": "cross-env CRUNCH_CFG=./crunchy.json pnpm build && pnpm client && vitest run"
+    "build:crunch": "cross-env CRUNCH_CFG=./crunchy.json tsx ./bin/crunchy.mts build",
+    "client": "cross-env CRUNCH_CFG=./crunchy.json tsx ./bin/crunchy.mts build:client",
+    "test": "cross-env CRUNCH_CFG=./crunchy.json pnpm build:crunch && pnpm client && vitest run",
+    "prepare": "ts-patch install"
   },
   "keywords": [],
   "author": "",
