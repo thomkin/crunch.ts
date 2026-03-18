@@ -2,8 +2,9 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { net } from "@bunny.net/edgescript-sdk";
 import { handleRequest } from "../crunch.ts";
 import { init, ServiceClient } from "../client/client";
-import { signToken } from "../helpers/jwt";
-import { RpcErrorCode } from "../crunch.ts/types.ts";
+
+import { RpcErrorCode } from "../crunch.ts/types.js";
+import { signToken } from "../crunch.ts/src/auth/utils";
 
 const PORT = 3001;
 const BASE_URL = `http://127.0.0.1:${PORT}`;

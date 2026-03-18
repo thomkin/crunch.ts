@@ -79,9 +79,18 @@ export async function handleRpcRequest(
           };
         }
 
+        if (!verifyResult.payload.sub) {
+          return {
+            error: RpcErrorCode.Unauthorized,
+            message: "Invalid Token - no user id given (sub)",
+          };
+        }
+
         // Populate context
         ctx.userId = verifyResult.payload.sub;
+        console.log("User ID:", ctx.userId, verifyResult.payload);
         ctx.permissions = verifyResult.payload.permissions || {};
+        ctx.tokenPayload = verifyResult.payload;
 
         // Check specific permission if required
         if (definition.requiredPermission) {

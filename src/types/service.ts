@@ -1,3 +1,10 @@
+export interface JwtPayload {
+  sub: string; // userId
+  exp?: number;
+  permissions?: Record<string, boolean>;
+  [key: string]: unknown;
+}
+
 export enum RpcErrorCode {
   InvalidRequest = 100,
   InvalidMethod = 101,
@@ -9,11 +16,12 @@ export enum RpcErrorCode {
 }
 
 export interface RpcContext {
-  userId?: string;
+  userId: string;
   permissions: Record<string, boolean>;
   params: Record<string, string>; // Path parameters for HTTP routes
   query: Record<string, string>; // Query parameters
   headers: Headers; // Raw headers
+  tokenPayload: JwtPayload;
 }
 
 export interface RpcRequest<TInput = unknown> {

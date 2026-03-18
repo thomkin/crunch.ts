@@ -1,6 +1,8 @@
 // Ultra-fast zero-dependency JWT implementation using WebCrypto
 // Specifically tailored for Edge runtime
 
+import { JwtPayload } from "../types/service";
+
 // We encode our signing key. You'd normally load this from an environment variable in Edge.
 const encoder = new TextEncoder();
 
@@ -23,13 +25,6 @@ function base64UrlDecode(str: string): string {
     base64 += "=";
   }
   return atob(base64);
-}
-
-interface JwtPayload {
-  sub?: string; // userId
-  exp?: number;
-  permissions?: Record<string, boolean>;
-  [key: string]: unknown;
 }
 
 export interface TokenVerificationResult {
