@@ -88,7 +88,6 @@ export async function handleRpcRequest(
 
         // Populate context
         ctx.userId = verifyResult.payload.sub;
-        console.log("User ID:", ctx.userId, verifyResult.payload);
         ctx.permissions = verifyResult.payload.permissions || {};
         ctx.tokenPayload = verifyResult.payload;
 
