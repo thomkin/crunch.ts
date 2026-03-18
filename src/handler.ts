@@ -2,12 +2,20 @@ import { handleRpcRequest } from "./router/rpc";
 import { handleHttpRequest } from "./router/http";
 import { RpcErrorCode } from "./types/service";
 
-export async function handleRequest(request: Request): Promise<Response> {
+interface options {
+  enableHttp?: boolean;
+  rpcOnly?: boolean;
+}
+
+export async function handleRequest(
+  request: Request,
+  options: options,
+): Promise<Response> {
   const url = new URL(request.url);
   const path = url.pathname;
 
   // 1. Route /rpc to the RPC engine
-  if (path === "/rpc" || path === "/rpc/") {
+  if (options.rpcOnly || path === "/rpc" || path === "/rpc/") {
     if (request.method !== "POST") {
       return new Response("Method Not Allowed", { status: 405 });
     }
@@ -63,5 +71,10 @@ export async function handleRequest(request: Request): Promise<Response> {
   }
 
   // 2. Generic HTTP Routing
-  return handleHttpRequest(request);
+  if (options.enableHttp) {
+    return handleHttpRequest(request);
+  }
+
+  //Now route found
+  return new Response("Not Found", { status: 404 });
 }
